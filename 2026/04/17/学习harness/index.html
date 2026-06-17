@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="John Doe">
+
+
+
+
+
+<title>学习harness | Hexo</title>
+
+
+
+    <link rel="icon" href="/1.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+    
+    <!-- 动态线条背景 -->
+    <script>
+        ! function() {
+            function n(n, e, t) {
+                return n.getAttribute(e) || t
+            }
+
+            function e(n) {
+                return document.getElementsByTagName(n)
+            }
+
+            function t() {
+                var t = e("script"),
+                    o = t.length,
+                    i = t[o - 1];
+                return {
+                    l: o,
+                    z: n(i, "zIndex", -1),
+                    o: n(i, "opacity", .5),
+                    c: n(i, "color", "0,0,0"),
+                    n: n(i, "count", 100)
+                }
+            }
+
+            function o() {
+                a = m.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+                    c = m.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+            }
+
+            function i() {
+                r.clearRect(0, 0, a, c);
+                var n, e, t, o, m, l;
+                s.forEach(function(i, x) {
+                    for (i.x += i.xa, i.y += i.ya, i.xa *= i.x > a || i.x < 0 ? -1 : 1, i.ya *= i.y > c || i
+                        .y < 0 ? -1 : 1, r.fillRect(i.x - .5, i.y - .5, 1, 1), e = x + 1; e < u.length; e++)
+                        n = u[e],
+                        null !== n.x && null !== n.y && (o = i.x - n.x, m = i.y - n.y, l = o * o + m * m, l < n
+                            .max && (n === y && l >= n.max / 2 && (i.x -= .03 * o, i.y -= .03 * m), t = (n.max -
+                                l) / n.max, r.beginPath(), r.lineWidth = t / 2, r.strokeStyle = "rgba(" + d.c +
+                            "," + (t + .2) + ")", r.moveTo(i.x, i.y), r.lineTo(n.x, n.y), r.stroke()))
+                }),
+                    x(i)
+            }
+            var a, c, u, m = document.createElement("canvas"),
+                d = t(),
+                l = "c_n" + d.l,
+                r = m.getContext("2d"),
+                x = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window
+                .mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+                function(n) {
+                    window.setTimeout(n, 1e3 / 45)
+                },
+                w = Math.random,
+                y = {
+                    x: null,
+                    y: null,
+                    max: 2e4
+                };
+            m.id = l,
+                m.style.cssText = "position:fixed;top:0;left:0;z-index:" + d.z + ";opacity:" + d.o,
+                e("body")[0].appendChild(m),
+                o(),
+                window.onresize = o,
+                window.onmousemove = function(n) {
+                    n = n || window.event,
+                        y.x = n.clientX,
+                        y.y = n.clientY
+                },
+                window.onmouseout = function() {
+                    y.x = null,
+                        y.y = null
+                };
+            for (var s = [], f = 0; d.n > f; f++) {
+                var h = w() * a,
+                    g = w() * c,
+                    v = 2 * w() - 1,
+                    p = 2 * w() - 1;
+                s.push({
+                    x: h,
+                    y: g,
+                    xa: v,
+                    ya: p,
+                    max: 6e3
+                })
+            }
+            u = s.concat([y]),
+                setTimeout(function() { i() }, 100)
+        }();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">xmx&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">xmx&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">学习harness</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">John Doe</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">April 17, 2026&nbsp;&nbsp;16:52:40</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="对-Harness-的理解"><a href="#对-Harness-的理解" class="headerlink" title="对 Harness 的理解"></a>对 Harness 的理解</h1><h2 id="什么是-Harness"><a href="#什么是-Harness" class="headerlink" title="什么是 Harness"></a>什么是 Harness</h2><p><strong>Harness</strong> 这个词在软件工程中，字面意思是”<strong>马具</strong>“或”** harness （挽具）**”，引申为”** harness （ harness  harness  harness  harness  harness  harness  harness  harness  harness  harness  harness  harness  harness  harness  harness  harness**”——</p>
+<p>简单来说，<strong>Harness 就是一套用来”驾驭”和”控制”某个东西的框架或工具</strong>，它把复杂的东西”套住”，让你能方便地操控、测试和管理它。</p>
+<h2 id="核心理解"><a href="#核心理解" class="headerlink" title="核心理解"></a>核心理解</h2><h3 id="1-测试领域中的-Harness"><a href="#1-测试领域中的-Harness" class="headerlink" title="1. 测试领域中的 Harness"></a>1. 测试领域中的 Harness</h3><p>在软件测试中最常见，<strong>Test Harness（测试 harness）</strong>指的是：</p>
+<ul>
+<li><strong>一个自动化测试框架</strong>，集合了测试用例、测试数据、执行引擎和结果收集</li>
+<li>它就像一个”<strong>测试马鞍</strong>“，把被测试的系统牢牢套住，然后驱动它运行、喂给它数据、观察它的输出</li>
+<li>典型的例子：JUnit、pytest、Selenium 都可以看作是一种测试 harness</li>
+</ul>
+<p><strong>核心作用：</strong></p>
+<ul>
+<li>自动执行测试脚本</li>
+<li>提供测试数据（输入）</li>
+<li>收集测试结果（输出）</li>
+<li>比对实际结果与预期结果</li>
+<li>生成测试报告</li>
+</ul>
+<h3 id="2-开发领域中的-Harness"><a href="#2-开发领域中的-Harness" class="headerlink" title="2. 开发领域中的 Harness"></a>2. 开发领域中的 Harness</h3><p>在开发工具链中，Harness 也可以指：</p>
+<ul>
+<li><strong>构建 Harness</strong>（Build Harness）：将编译、打包、部署等步骤串联起来的自动化脚本或工具</li>
+<li><strong>部署 Harness</strong>（Deployment Harness）：管理应用部署流程的框架，如 CI&#x2F;CD 流水线中的部署脚本</li>
+<li>一个著名的产品 <strong>Harness</strong> 就是专注于 CI&#x2F;CD 的平台，用于自动化软件交付</li>
+</ul>
+<p><strong>核心作用：</strong></p>
+<ul>
+<li>将分散的工具和步骤整合成一条流水线</li>
+<li>减少人工干预</li>
+<li>提高可靠性</li>
+</ul>
+<h3 id="3-类比理解"><a href="#3-类比理解" class="headerlink" title="3. 类比理解"></a>3. 类比理解</h3><p>把 Harness 想象成<strong>赛车手的全套装备</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>赛车装备</th>
+<th>对应 Harness 的作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>方向盘</td>
+<td>控制测试&#x2F;流程的执行方向</td>
+</tr>
+<tr>
+<td>安全带（Harness）</td>
+<td>确保测试过程安全、受控</td>
+</tr>
+<tr>
+<td>仪表盘</td>
+<td>监控状态、收集数据</td>
+</tr>
+<tr>
+<td>油门&#x2F;刹车</td>
+<td>控制执行节奏</td>
+</tr>
+<tr>
+<td>车队无线电</td>
+<td>与外部系统通信</td>
+</tr>
+</tbody></table>
+<p><strong>马具的比喻更直接：</strong></p>
+<ul>
+<li>马 &#x3D; 被测试的系统</li>
+<li>马具（Harness）&#x3D; 测试框架</li>
+<li>骑手 &#x3D; 开发者&#x2F;测试人员</li>
+<li>缰绳 &#x3D; 测试用例和控制逻辑</li>
+</ul>
+<p>有了 Harness，你才能驾驭”马”，让它按照你的意愿跑起来，并在跑的过程中观察它的状态。</p>
+<h2 id="为什么需要-Harness"><a href="#为什么需要-Harness" class="headerlink" title="为什么需要 Harness"></a>为什么需要 Harness</h2><ol>
+<li><strong>标准化</strong>：统一测试和部署的流程，避免”每个项目自己瞎搞一套”</li>
+<li><strong>自动化</strong>：减少重复的人工操作，提效</li>
+<li><strong>可重复</strong>：同样的步骤每次执行结果一致</li>
+<li><strong>可追溯</strong>：记录每次执行的过程和结果</li>
+<li><strong>降低门槛</strong>：新人不需要了解所有底层细节就能跑测试、部署系统</li>
+</ol>
+<h2 id="实际应用场景"><a href="#实际应用场景" class="headerlink" title="实际应用场景"></a>实际应用场景</h2><h3 id="场景一：单元测试"><a href="#场景一：单元测试" class="headerlink" title="场景一：单元测试"></a>场景一：单元测试</h3><pre><code class="python"># pytest 就是一个测试 Harness
+def test_add():
+    assert add(1, 2) == 3
+
+# 你只需要写测试逻辑，pytest 负责：
+# - 发现测试用例
+# - 执行并收集结果
+# - 报告失败原因
+</code></pre>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>John Doe</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://example.com/2026/04/17/%E5%AD%A6%E4%B9%A0harness/">http://example.com/2026/04/17/%E5%AD%A6%E4%B9%A0harness/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/agent/"># agent</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2022/05/17/%E5%AD%A6%E4%B9%A0Canal/">学习Canal</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© John Doe | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
