@@ -13,7 +13,7 @@
 
 
 
-<title>学习harness | Hexo</title>
+<title>如何通过docker偷偷地在学校的服务器部署一个开发机3 | Hexo</title>
 
 
 
@@ -283,7 +283,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">学习harness</h1>
+            <h1 class="post-title">如何通过docker偷偷地在学校的服务器部署一个开发机3</h1>
             
                 <div class="post-meta">
                     
@@ -292,7 +292,7 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">April 17, 2026&nbsp;&nbsp;16:52:40</a>
+                        Date: <a href="#">September 19, 2024&nbsp;&nbsp;14:54:48</a>
                         </span>
                     
                     
@@ -301,79 +301,38 @@
         </header>
 
         <div class="post-content">
-            <h1 id="对-Harness-的理解"><a href="#对-Harness-的理解" class="headerlink" title="对 Harness 的理解"></a>对 Harness 的理解</h1><h2 id="什么是-Harness"><a href="#什么是-Harness" class="headerlink" title="什么是 Harness"></a>什么是 Harness</h2><p><strong>Harness</strong> 这个词在软件工程中，字面意思是”<strong>马具</strong>“或”** harness （挽具）**”，引申为”** harness （ harness  harness  harness  harness  harness  harness  harness  harness  harness  harness  harness  harness  harness  harness  harness  harness**”——</p>
-<p>简单来说，<strong>Harness 就是一套用来”驾驭”和”控制”某个东西的框架或工具</strong>，它把复杂的东西”套住”，让你能方便地操控、测试和管理它。</p>
-<h2 id="核心理解"><a href="#核心理解" class="headerlink" title="核心理解"></a>核心理解</h2><h3 id="1-测试领域中的-Harness"><a href="#1-测试领域中的-Harness" class="headerlink" title="1. 测试领域中的 Harness"></a>1. 测试领域中的 Harness</h3><p>在软件测试中最常见，<strong>Test Harness（测试 harness）</strong>指的是：</p>
+            <h1 id="美化Shell"><a href="#美化Shell" class="headerlink" title="美化Shell"></a>美化Shell</h1><p>zsh和oh-my-zsh的安装与配置</p>
+<p>正式安装之前，在终端输入以下命令，查看系统现有的shell：</p>
+<p>cat &#x2F;etc&#x2F;shells</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87docker%E5%81%B7%E5%81%B7%E5%9C%B0%E5%9C%A8%E5%AD%A6%E6%A0%A1%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AA%E5%BC%80%E5%8F%91%E6%9C%BA3/image.png" alt="alt text"></p>
+<p>在终端直接输入以下命令，进行安装zsh：</p>
+<p>apt install zsh</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87docker%E5%81%B7%E5%81%B7%E5%9C%B0%E5%9C%A8%E5%AD%A6%E6%A0%A1%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AA%E5%BC%80%E5%8F%91%E6%9C%BA3/image-1.png" alt="alt text"></p>
+<p>遇到点问题，APT 包管理器在下载 zsh 相关依赖时，被强制从 HTTP 重定向到了一个异常地址（含 VLAN 和 MAC 信息），系统禁止此类不安全重定向，导致下载失败。</p>
+<p>APT 依赖本地的「软件源列表」（&#x2F;etc&#x2F;apt&#x2F;sources.list 及相关文件）获取包地址，若列表过时或缓存异常，可能导致地址跳转错误。首先执行更新：</p>
 <ul>
-<li><strong>一个自动化测试框架</strong>，集合了测试用例、测试数据、执行引擎和结果收集</li>
-<li>它就像一个”<strong>测试马鞍</strong>“，把被测试的系统牢牢套住，然后驱动它运行、喂给它数据、观察它的输出</li>
-<li>典型的例子：JUnit、pytest、Selenium 都可以看作是一种测试 harness</li>
+<li>更新软件源列表<br>apt update</li>
 </ul>
-<p><strong>核心作用：</strong></p>
-<ul>
-<li>自动执行测试脚本</li>
-<li>提供测试数据（输入）</li>
-<li>收集测试结果（输出）</li>
-<li>比对实际结果与预期结果</li>
-<li>生成测试报告</li>
-</ul>
-<h3 id="2-开发领域中的-Harness"><a href="#2-开发领域中的-Harness" class="headerlink" title="2. 开发领域中的 Harness"></a>2. 开发领域中的 Harness</h3><p>在开发工具链中，Harness 也可以指：</p>
-<ul>
-<li><strong>构建 Harness</strong>（Build Harness）：将编译、打包、部署等步骤串联起来的自动化脚本或工具</li>
-<li><strong>部署 Harness</strong>（Deployment Harness）：管理应用部署流程的框架，如 CI&#x2F;CD 流水线中的部署脚本</li>
-<li>一个著名的产品 <strong>Harness</strong> 就是专注于 CI&#x2F;CD 的平台，用于自动化软件交付</li>
-</ul>
-<p><strong>核心作用：</strong></p>
-<ul>
-<li>将分散的工具和步骤整合成一条流水线</li>
-<li>减少人工干预</li>
-<li>提高可靠性</li>
-</ul>
-<h3 id="3-类比理解"><a href="#3-类比理解" class="headerlink" title="3. 类比理解"></a>3. 类比理解</h3><p>把 Harness 想象成<strong>赛车手的全套装备</strong>：</p>
-<table>
-<thead>
-<tr>
-<th>赛车装备</th>
-<th>对应 Harness 的作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>方向盘</td>
-<td>控制测试&#x2F;流程的执行方向</td>
-</tr>
-<tr>
-<td>安全带（Harness）</td>
-<td>确保测试过程安全、受控</td>
-</tr>
-<tr>
-<td>仪表盘</td>
-<td>监控状态、收集数据</td>
-</tr>
-<tr>
-<td>油门&#x2F;刹车</td>
-<td>控制执行节奏</td>
-</tr>
-<tr>
-<td>车队无线电</td>
-<td>与外部系统通信</td>
-</tr>
-</tbody></table>
-<p><strong>马具的比喻更直接：</strong></p>
-<ul>
-<li>马 &#x3D; 被测试的系统</li>
-<li>马具（Harness）&#x3D; 测试框架</li>
-<li>骑手 &#x3D; 开发者&#x2F;测试人员</li>
-<li>缰绳 &#x3D; 测试用例和控制逻辑</li>
-</ul>
-<p>有了 Harness，你才能驾驭”马”，让它按照你的意愿跑起来，并在跑的过程中观察它的状态。</p>
-<h2 id="为什么需要-Harness"><a href="#为什么需要-Harness" class="headerlink" title="为什么需要 Harness"></a>为什么需要 Harness</h2><ol>
-<li><strong>标准化</strong>：统一测试和部署的流程，避免”每个项目自己瞎搞一套”</li>
-<li><strong>自动化</strong>：减少重复的人工操作，提效</li>
-<li><strong>可重复</strong>：同样的步骤每次执行结果一致</li>
-<li><strong>可追溯</strong>：记录每次执行的过程和结果</li>
-<li><strong>降低门槛</strong>：新人不需要了解所有底层细节就能跑测试、部署系统</li>
-</ol>
+<p><img src="https://15hmael.github.io/2025/09/12/%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87docker%E5%81%B7%E5%81%B7%E5%9C%B0%E5%9C%A8%E5%AD%A6%E6%A0%A1%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AA%E5%BC%80%E5%8F%91%E6%9C%BA3/image-2.png" alt="alt text"></p>
+<p>更换软件源为国内镜像</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># 备份原有源列表</span><br><span class="line">cp /etc/apt/sources.list /etc/apt/sources.list.bak</span><br><span class="line"></span><br><span class="line"># 使用国内阿里云镜像源（适用于Ubuntu 24.04 noble）</span><br><span class="line">cat &gt; /etc/apt/sources.list &lt;&lt; EOF</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ noble main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ noble main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ noble-security main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ noble-security main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ noble-updates main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ noble-updates main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ noble-backports main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ noble-backports main restricted universe multiverse</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line"># 再次尝试更新</span><br><span class="line">apt update</span><br></pre></td></tr></table></figure>
 
+<p>都没解决问题，而且昨天下载vim的时候还好好的</p>
+<p>ok我直接重启就完事了</p>
+<p>docker stop lihaoUbuntu &amp;&amp; docker rm lihaoUbuntu</p>
+<p>重建容器时指定公共 DNS：</p>
+<p>docker run –name lihaoUbuntu -t -i -d -p 3316:22<br>–dns 8.8.8.8 –dns 114.114.114.114<br>lihao</p>
+<p>连不上了</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87docker%E5%81%B7%E5%81%B7%E5%9C%B0%E5%9C%A8%E5%AD%A6%E6%A0%A1%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AA%E5%BC%80%E5%8F%91%E6%9C%BA3/image-3.png" alt="alt text"></p>
+<p>查看容器运行状态</p>
+<p>docker ps | grep lihaoUbuntu</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87docker%E5%81%B7%E5%81%B7%E5%9C%B0%E5%9C%A8%E5%AD%A6%E6%A0%A1%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AA%E5%BC%80%E5%8F%91%E6%9C%BA3/image-4.png" alt="alt text"></p>
+<p>还行，进入容器检查 SSH 服务状态：</p>
+<p>docker exec -it lihaoUbuntu &#x2F;bin&#x2F;bash</p>
+<p>想起来忘记启动容器的ssh服务了，不仅仅是这样，我重构了容器，里面的操作都没了，大意了</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87docker%E5%81%B7%E5%81%B7%E5%9C%B0%E5%9C%A8%E5%AD%A6%E6%A0%A1%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AA%E5%BC%80%E5%8F%91%E6%9C%BA3/image-5.png" alt="alt text"></p>
+<p>尝试了几次应该是没救了，应该被ban了</p>
+<h1 id="放弃！改用VBox直接部署Ubuntu虚拟机！"><a href="#放弃！改用VBox直接部署Ubuntu虚拟机！" class="headerlink" title="放弃！改用VBox直接部署Ubuntu虚拟机！"></a>放弃！改用VBox直接部署Ubuntu虚拟机！</h1>
         </div>
 
         
@@ -387,7 +346,7 @@
                 
                     <p class="copyright-item">
                         <span>Permalink:</span>
-                        <span><a href="http://example.com/2026/04/17/%E5%AD%A6%E4%B9%A0harness/">http://example.com/2026/04/17/%E5%AD%A6%E4%B9%A0harness/</a></span>
+                        <span><a href="http://example.com/2024/09/19/%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87docker%E5%81%B7%E5%81%B7%E5%9C%B0%E5%9C%A8%E5%AD%A6%E6%A0%A1%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AA%E5%BC%80%E5%8F%91%E6%9C%BA3/">http://example.com/2024/09/19/%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87docker%E5%81%B7%E5%81%B7%E5%9C%B0%E5%9C%A8%E5%AD%A6%E6%A0%A1%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AA%E5%BC%80%E5%8F%91%E6%9C%BA3/</a></span>
                     </p>
                 
                 
@@ -411,7 +370,9 @@
                 <span class="tag">
                     
                     
-                        <a href="/tags/agent/"># agent</a>
+                        <a href="/tags/%E8%99%9A%E6%8B%9F%E6%9C%BA/"># 虚拟机</a>
+                    
+                        <a href="/tags/Git/"># Git</a>
                     
                         
                 </span>
@@ -424,8 +385,10 @@
         </section>
         <section class="post-nav">
             
+                <a class="prev" rel="prev" href="/2024/09/20/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA-%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/">虚拟机部署开发机 并使用Zsh美化</a>
             
-            <a class="next" rel="next" href="/2024/09/20/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA-%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/">虚拟机部署开发机 并使用Zsh美化</a>
+            
+            <a class="next" rel="next" href="/2023/03/19/%E5%A6%82%E4%BD%95%E7%94%A8%E9%B8%9F%E7%B1%BB%E5%AE%9E%E7%8E%B0%E7%BD%91%E7%BB%9C%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE/">如何用鸟类实现网络传输协议</a>
             
         </section>
 

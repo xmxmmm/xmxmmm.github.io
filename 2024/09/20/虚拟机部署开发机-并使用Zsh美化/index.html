@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="The Great Bear">
+
+
+
+
+
+<title>虚拟机部署开发机 并使用Zsh美化 | Hexo</title>
+
+
+
+    <link rel="icon" href="/1.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+    
+    <!-- 动态线条背景 -->
+    <script>
+        ! function() {
+            function n(n, e, t) {
+                return n.getAttribute(e) || t
+            }
+
+            function e(n) {
+                return document.getElementsByTagName(n)
+            }
+
+            function t() {
+                var t = e("script"),
+                    o = t.length,
+                    i = t[o - 1];
+                return {
+                    l: o,
+                    z: n(i, "zIndex", -1),
+                    o: n(i, "opacity", .5),
+                    c: n(i, "color", "0,0,0"),
+                    n: n(i, "count", 100)
+                }
+            }
+
+            function o() {
+                a = m.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+                    c = m.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+            }
+
+            function i() {
+                r.clearRect(0, 0, a, c);
+                var n, e, t, o, m, l;
+                s.forEach(function(i, x) {
+                    for (i.x += i.xa, i.y += i.ya, i.xa *= i.x > a || i.x < 0 ? -1 : 1, i.ya *= i.y > c || i
+                        .y < 0 ? -1 : 1, r.fillRect(i.x - .5, i.y - .5, 1, 1), e = x + 1; e < u.length; e++)
+                        n = u[e],
+                        null !== n.x && null !== n.y && (o = i.x - n.x, m = i.y - n.y, l = o * o + m * m, l < n
+                            .max && (n === y && l >= n.max / 2 && (i.x -= .03 * o, i.y -= .03 * m), t = (n.max -
+                                l) / n.max, r.beginPath(), r.lineWidth = t / 2, r.strokeStyle = "rgba(" + d.c +
+                            "," + (t + .2) + ")", r.moveTo(i.x, i.y), r.lineTo(n.x, n.y), r.stroke()))
+                }),
+                    x(i)
+            }
+            var a, c, u, m = document.createElement("canvas"),
+                d = t(),
+                l = "c_n" + d.l,
+                r = m.getContext("2d"),
+                x = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window
+                .mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+                function(n) {
+                    window.setTimeout(n, 1e3 / 45)
+                },
+                w = Math.random,
+                y = {
+                    x: null,
+                    y: null,
+                    max: 2e4
+                };
+            m.id = l,
+                m.style.cssText = "position:fixed;top:0;left:0;z-index:" + d.z + ";opacity:" + d.o,
+                e("body")[0].appendChild(m),
+                o(),
+                window.onresize = o,
+                window.onmousemove = function(n) {
+                    n = n || window.event,
+                        y.x = n.clientX,
+                        y.y = n.clientY
+                },
+                window.onmouseout = function() {
+                    y.x = null,
+                        y.y = null
+                };
+            for (var s = [], f = 0; d.n > f; f++) {
+                var h = w() * a,
+                    g = w() * c,
+                    v = 2 * w() - 1,
+                    p = 2 * w() - 1;
+                s.push({
+                    x: h,
+                    y: g,
+                    xa: v,
+                    ya: p,
+                    max: 6e3
+                })
+            }
+            u = s.concat([y]),
+                setTimeout(function() { i() }, 100)
+        }();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">xmx&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">xmx&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">虚拟机部署开发机 并使用Zsh美化</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">The Great Bear</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">September 20, 2024&nbsp;&nbsp;13:32:19</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="安装Ubuntu虚拟机"><a href="#安装Ubuntu虚拟机" class="headerlink" title="安装Ubuntu虚拟机"></a>安装Ubuntu虚拟机</h1><p>下载镜像文件<br><a target="_blank" rel="noopener" href="https://repo.huaweicloud.com/ubuntu-releases/">华为源</a></p>
+<p>22.04版本<br><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image.png" alt="alt text"></p>
+<p>安装VBox之后直接新建虚拟机，镜像选择刚下载的iso</p>
+<p>启动虚拟机</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-1.png" alt="alt text"></p>
+<p>回车进入安装</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-2.png" alt="alt text"></p>
+<p>软锁死，奇怪</p>
+<p>尝试减少核心，增大内存再重启</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-3.png" alt="alt text"></p>
+<p>好像有效果</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-4.png" alt="alt text"></p>
+<p>在加载中了</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-5.png" alt="alt text"></p>
+<p>进去之后卡的没边，有点无语</p>
+<p>使用命令模式</p>
+<p>CTRL + ALT + F3</p>
+<p>su - 再输入密码进入root</p>
+<p>安装vim</p>
+<p>apt install vim</p>
+<p>没有ssh服务</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-6.png" alt="alt text"></p>
+<p>安装ssh服务</p>
+<p>apt update</p>
+<p>apt install openssh-server</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-7.png" alt="alt text"></p>
+<p>修改配置</p>
+<p>vim &#x2F;etc&#x2F;ssh&#x2F;sshd_config</p>
+<p>启动服务</p>
+<p>systemctl start ssh</p>
+<p>设置开机自启动</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-8.png" alt="alt text"></p>
+<h1 id="ssh连接"><a href="#ssh连接" class="headerlink" title="ssh连接"></a>ssh连接</h1><p>先看一下虚拟机的ip地址</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-9.png" alt="alt text"></p>
+<p>在终端ping不通这个地址，说明肯定连不上</p>
+<p>Vbox换成桥接模式，进入ubuntu系统发现ip变了，再ping就通了</p>
+<p>然后尝试ssh连接</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-11.png" alt="alt text"></p>
+<p>lihao登陆成功</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-12.png" alt="alt text"></p>
+<h1 id="bash美化"><a href="#bash美化" class="headerlink" title="bash美化"></a>bash美化</h1><ol>
+<li>安装基本工具</li>
+</ol>
+<p>apt install zsh git curl -y</p>
+<p>设置默认终端为 zsh</p>
+<p>chsh -s &#x2F;bin&#x2F;zsh</p>
+<ol>
+<li>安装oh-my-zsh</li>
+</ol>
+<p>sh -c “$(curl -fsSL <a target="_blank" rel="noopener" href="https://install.ohmyz.sh/)%E2%80%9D">https://install.ohmyz.sh/)”</a></p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-13.png" alt="alt text"></p>
+<p>等了一会没反应噻</p>
+<p>sh -c “$(curl -fsSL <a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)%E2%80%9D">https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)”</a></p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-14.png" alt="alt text"></p>
+<p>难顶</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-15.png" alt="alt text"></p>
+<p>wget <a target="_blank" rel="noopener" href="https://sourceforge.net/projects/zsh/files/latest/download/zsh-*.tar.xz">https://sourceforge.net/projects/zsh/files/latest/download/zsh-*.tar.xz</a></p>
+<p>还是卡住不动</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-16.png" alt="alt text"></p>
+<p>这些网址都ping不通，应该是DNS问题</p>
+<p>vim &#x2F;etc&#x2F;systemd&#x2F;resolved.conf</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-17.png" alt="alt text"></p>
+<p>这里等于号后面应该不加空格，写错了</p>
+<p>重启 systemd-resolved 服务</p>
+<p>systemctl restart systemd-resolved</p>
+<p>设置开机启动 systemd-resolved 服务</p>
+<p>systemctl enable systemd-resolved</p>
+<p>备份 systemd-resolved 托管文件 resolv.conf</p>
+<p>mv &#x2F;etc&#x2F;resolv.conf &#x2F;etc&#x2F;resolv.conf.bak</p>
+<p>重新生成</p>
+<p>NAT配置没问题</p>
+<p>尝试ping gitee.com不通</p>
+<p>有把虚拟机网络切回NAT模式，通了</p>
+<p>之前用桥接模式时 ping 不通 Gitee，大概率是 物理网络环境对 “新设备”（虚拟机）有隐性限制，比如：</p>
+<p>物理路由器的 DHCP 服务虽然给了虚拟机 IP，但限制了该 IP 的外网访问权限；</p>
+<p>物理网络的 DNS 服务器（比如公司 &#x2F; 校园网的内网 DNS）无法解析 Gitee 的域名；</p>
+<p>物理网络的防火墙规则拦截了虚拟机 IP 的出站请求（比如禁止非备案设备访问外网）。</p>
+<p>而切换到 NAT 模式后，虚拟机的所有网络流量都会伪装成宿主机的流量（通过宿主机的 IP 和网络配置转发）—— 既然你的物理机本身能正常访问 Gitee，虚拟机自然也能 “借道” 通了。</p>
+<h1 id="暂停美化，解决新问题"><a href="#暂停美化，解决新问题" class="headerlink" title="暂停美化，解决新问题"></a>暂停美化，解决新问题</h1><p>我在NAT模式下怎么才能用ssh连接到虚拟机呢？</p>
+<p>在 NAT 模式下，由于虚拟机的 IP 是 “私有网段”（仅能被宿主机识别，无法被局域网其他设备直接访问），要通过 SSH 连接虚拟机，需要通过 “端口转发”（Port Forwarding）将宿主机的端口映射到虚拟机的 SSH 端口（默认 22）。</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-18.png" alt="alt text"></p>
+<p>VirtualBox</p>
+<p>关闭虚拟机，右键点击虚拟机 →「设置」→「网络」；</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-19.png" alt="alt text"></p>
+<p>选择「NAT」模式，点击「高级」→「端口转发」；</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-20.png" alt="alt text"></p>
+<p>点击「+」添加规则：</p>
+<p>名称：可选（如 “SSH”）；<br>协议：TCP；<br>主机 IP：留空（或填 127.0.0.1 仅允许本地连接）；<br>主机端口：2222（同上，自定义端口）；<br>子系统 IP：虚拟机 IP，在虚拟机里ip addr查看；<br>子系统端口：22；</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-21.png" alt="alt text"></p>
+<p>保存设置，启动虚拟机。</p>
+<p>其他设备的终端执行 ssh 虚拟机用户名@宿主机局域网IP -p 2222</p>
+<p>如果我只在宿主机上ssh虚拟机</p>
+<p>ssh ubuntu@localhost -p 2222 就ok</p>
+<h1 id="继续美化"><a href="#继续美化" class="headerlink" title="继续美化"></a>继续美化</h1><p>这次能ping通了</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-22.png" alt="alt text"></p>
+<p>一步到位</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-23.png" alt="alt text"></p>
+<p>安装zsh -autosuggestions 插件</p>
+<p>zsh-autosuggestions 是一个命令提示插件，当你输入命令时，会自动推测你可能需要输入的命令，按下右键可以快速采用建议。</p>
+<p>git clone <a target="_blank" rel="noopener" href="https://gh.xmly.dev/https://github.com/zsh-users/zsh-autosuggestions">https://gh.xmly.dev/https://github.com/zsh-users/zsh-autosuggestions</a> ${ZSH_CUSTOM:-~&#x2F;.oh-my-zsh&#x2F;custom}&#x2F;plugins&#x2F;zsh-autosuggestions</p>
+<p>zsh-syntax-highlighting 插件</p>
+<p>zsh-syntax-highlighting 是一个命令语法校验插件，在输入命令的过程中，若指令不合法，则指令显示为红色，若指令合法就会显示为绿色。</p>
+<p>git clone <a target="_blank" rel="noopener" href="https://gh.xmly.dev/https://github.com/zsh-users/zsh-syntax-highlighting.git">https://gh.xmly.dev/https://github.com/zsh-users/zsh-syntax-highlighting.git</a> ${ZSH_CUSTOM:-~&#x2F;.oh-my-zsh&#x2F;custom}&#x2F;plugins&#x2F;zsh-syntax-highlighting</p>
+<p>启用插件</p>
+<p>vim ~&#x2F;.zshrc</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-24.png" alt="alt text"></p>
+<p>再装一个fzf，fzf 是一款命令行模糊搜索工具，能与 shell 深度集成，Ctrl+R 进行搜索</p>
+<p>sudo apt install fzf</p>
+<p>还是把它放到vim ~&#x2F;.zshrc的插件列表里就可以了</p>
+<p><img src="https://15hmael.github.io/2025/09/12/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA%20%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/image-25.png" alt="alt text"></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>The Great Bear</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://example.com/2024/09/20/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA-%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/">http://example.com/2024/09/20/%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%83%A8%E7%BD%B2%E5%BC%80%E5%8F%91%E6%9C%BA-%E5%B9%B6%E4%BD%BF%E7%94%A8Zsh%E7%BE%8E%E5%8C%96/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E8%99%9A%E6%8B%9F%E6%9C%BA/"># 虚拟机</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2026/04/17/%E5%AD%A6%E4%B9%A0harness/">学习harness</a>
+            
+            
+            <a class="next" rel="next" href="/2024/09/19/%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87docker%E5%81%B7%E5%81%B7%E5%9C%B0%E5%9C%A8%E5%AD%A6%E6%A0%A1%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AA%E5%BC%80%E5%8F%91%E6%9C%BA3/">如何通过docker偷偷地在学校的服务器部署一个开发机3</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© The Great Bear | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

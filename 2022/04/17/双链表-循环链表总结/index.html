@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="The Great Bear">
+
+
+
+
+
+<title>双链表 &amp; 循环链表总结 | Hexo</title>
+
+
+
+    <link rel="icon" href="/1.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+    
+    <!-- 动态线条背景 -->
+    <script>
+        ! function() {
+            function n(n, e, t) {
+                return n.getAttribute(e) || t
+            }
+
+            function e(n) {
+                return document.getElementsByTagName(n)
+            }
+
+            function t() {
+                var t = e("script"),
+                    o = t.length,
+                    i = t[o - 1];
+                return {
+                    l: o,
+                    z: n(i, "zIndex", -1),
+                    o: n(i, "opacity", .5),
+                    c: n(i, "color", "0,0,0"),
+                    n: n(i, "count", 100)
+                }
+            }
+
+            function o() {
+                a = m.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+                    c = m.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+            }
+
+            function i() {
+                r.clearRect(0, 0, a, c);
+                var n, e, t, o, m, l;
+                s.forEach(function(i, x) {
+                    for (i.x += i.xa, i.y += i.ya, i.xa *= i.x > a || i.x < 0 ? -1 : 1, i.ya *= i.y > c || i
+                        .y < 0 ? -1 : 1, r.fillRect(i.x - .5, i.y - .5, 1, 1), e = x + 1; e < u.length; e++)
+                        n = u[e],
+                        null !== n.x && null !== n.y && (o = i.x - n.x, m = i.y - n.y, l = o * o + m * m, l < n
+                            .max && (n === y && l >= n.max / 2 && (i.x -= .03 * o, i.y -= .03 * m), t = (n.max -
+                                l) / n.max, r.beginPath(), r.lineWidth = t / 2, r.strokeStyle = "rgba(" + d.c +
+                            "," + (t + .2) + ")", r.moveTo(i.x, i.y), r.lineTo(n.x, n.y), r.stroke()))
+                }),
+                    x(i)
+            }
+            var a, c, u, m = document.createElement("canvas"),
+                d = t(),
+                l = "c_n" + d.l,
+                r = m.getContext("2d"),
+                x = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window
+                .mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+                function(n) {
+                    window.setTimeout(n, 1e3 / 45)
+                },
+                w = Math.random,
+                y = {
+                    x: null,
+                    y: null,
+                    max: 2e4
+                };
+            m.id = l,
+                m.style.cssText = "position:fixed;top:0;left:0;z-index:" + d.z + ";opacity:" + d.o,
+                e("body")[0].appendChild(m),
+                o(),
+                window.onresize = o,
+                window.onmousemove = function(n) {
+                    n = n || window.event,
+                        y.x = n.clientX,
+                        y.y = n.clientY
+                },
+                window.onmouseout = function() {
+                    y.x = null,
+                        y.y = null
+                };
+            for (var s = [], f = 0; d.n > f; f++) {
+                var h = w() * a,
+                    g = w() * c,
+                    v = 2 * w() - 1,
+                    p = 2 * w() - 1;
+                s.push({
+                    x: h,
+                    y: g,
+                    xa: v,
+                    ya: p,
+                    max: 6e3
+                })
+            }
+            u = s.concat([y]),
+                setTimeout(function() { i() }, 100)
+        }();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">xmx&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">xmx&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">双链表 &amp; 循环链表总结</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">The Great Bear</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">April 17, 2022&nbsp;&nbsp;12:21:46</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="一、双链表（Doubly-Linked-List）"><a href="#一、双链表（Doubly-Linked-List）" class="headerlink" title="一、双链表（Doubly Linked List）"></a>一、双链表（Doubly Linked List）</h2><h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p>每个节点包含三部分：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">null ← [prev | data | next] ⇄ [prev | data | next] ⇄ [prev | data | next] → null</span><br><span class="line">         head                                              tail</span><br></pre></td></tr></table></figure>
+
+<h3 id="节点定义（Java）"><a href="#节点定义（Java）" class="headerlink" title="节点定义（Java）"></a>节点定义（Java）</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DoublyListNode</span> &#123;</span><br><span class="line">    <span class="type">int</span> val;</span><br><span class="line">    DoublyListNode prev;</span><br><span class="line">    DoublyListNode next;</span><br><span class="line"></span><br><span class="line">    DoublyListNode(<span class="type">int</span> val) &#123; <span class="built_in">this</span>.val = val; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="核心操作"><a href="#核心操作" class="headerlink" title="核心操作"></a>核心操作</h3><table>
+<thead>
+<tr>
+<th>操作</th>
+<th>时间复杂度</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>头部插入</td>
+<td>O(1)</td>
+<td>修改 head.prev</td>
+</tr>
+<tr>
+<td>尾部插入</td>
+<td>O(1)</td>
+<td>持有 tail 指针时</td>
+</tr>
+<tr>
+<td>任意位置插入</td>
+<td>O(1)</td>
+<td>已知节点引用时</td>
+</tr>
+<tr>
+<td>按索引查找</td>
+<td>O(n)</td>
+<td>可从两端双向逼近</td>
+</tr>
+<tr>
+<td>删除任意节点</td>
+<td>O(1)</td>
+<td>已知节点引用时（单链表需要前驱）</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>💡 相比单链表，双链表最大优势：<strong>已知节点可 O(1) 删除</strong>，无需找前驱。</p>
+</blockquote>
+<h3 id="插入节点（在-node-之后插入-newNode）"><a href="#插入节点（在-node-之后插入-newNode）" class="headerlink" title="插入节点（在 node 之后插入 newNode）"></a>插入节点（在 node 之后插入 newNode）</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">insertAfter</span><span class="params">(DoublyListNode node, DoublyListNode newNode)</span> &#123;</span><br><span class="line">    newNode.next = node.next;</span><br><span class="line">    newNode.prev = node;</span><br><span class="line">    <span class="keyword">if</span> (node.next != <span class="literal">null</span>) &#123;</span><br><span class="line">        node.next.prev = newNode;</span><br><span class="line">    &#125;</span><br><span class="line">    node.next = newNode;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="删除节点"><a href="#删除节点" class="headerlink" title="删除节点"></a>删除节点</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">delete</span><span class="params">(DoublyListNode node)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (node.prev != <span class="literal">null</span>) node.prev.next = node.next;</span><br><span class="line">    <span class="keyword">if</span> (node.next != <span class="literal">null</span>) node.next.prev = node.prev;</span><br><span class="line">    <span class="comment">// 释放引用（GC）</span></span><br><span class="line">    node.prev = <span class="literal">null</span>;</span><br><span class="line">    node.next = <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、循环链表（Circular-Linked-List）"><a href="#二、循环链表（Circular-Linked-List）" class="headerlink" title="二、循环链表（Circular Linked List）"></a>二、循环链表（Circular Linked List）</h2><h3 id="结构-1"><a href="#结构-1" class="headerlink" title="结构"></a>结构</h3><p>尾节点的 <code>next</code> 指回头节点，形成环：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">┌──────────────────────────────────┐</span><br><span class="line">↓                                  │</span><br><span class="line">[data | next] → [data | next] → [data | next]</span><br><span class="line">  head</span><br></pre></td></tr></table></figure>
+
+<p>也可以是<strong>双向循环链表</strong>：头尾互相连接。</p>
+<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><ul>
+<li><strong>操作系统进程调度</strong>（Round Robin 轮转）</li>
+<li><strong>约瑟夫问题</strong>（Josephus Problem）</li>
+<li><strong>音乐播放器循环播放</strong></li>
+</ul>
+<h3 id="判断是否为循环链表"><a href="#判断是否为循环链表" class="headerlink" title="判断是否为循环链表"></a>判断是否为循环链表</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 快慢指针，若相遇则有环（即循环链表）</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">isCircular</span><span class="params">(ListNode head)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (head == <span class="literal">null</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="type">ListNode</span> <span class="variable">slow</span> <span class="operator">=</span> head, fast = head.next;</span><br><span class="line">    <span class="keyword">while</span> (fast != <span class="literal">null</span> &amp;&amp; fast.next != <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (slow == fast) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        slow = slow.next;</span><br><span class="line">        fast = fast.next.next;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="约瑟夫问题"><a href="#约瑟夫问题" class="headerlink" title="约瑟夫问题"></a>约瑟夫问题</h3><blockquote>
+<p>N 个人围成一圈，每数到 K 淘汰一人，求最后存活者编号。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 数学递推公式：O(n) 时间，O(1) 空间</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">josephus</span><span class="params">(<span class="type">int</span> n, <span class="type">int</span> k)</span> &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> <span class="number">0</span>; <span class="comment">// 0-indexed 最终存活位置</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">2</span>; i &lt;= n; i++) &#123;</span><br><span class="line">        pos = (pos + k) % i;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> pos + <span class="number">1</span>; <span class="comment">// 转为 1-indexed</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、双链表实战：LRU-缓存"><a href="#三、双链表实战：LRU-缓存" class="headerlink" title="三、双链表实战：LRU 缓存"></a>三、双链表实战：LRU 缓存</h2><p>LRU（Least Recently Used）是双链表最经典的应用，结合 HashMap 实现 O(1) 的 get&#x2F;put。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">LRUCache</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">int</span> capacity;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Map&lt;Integer, Node&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">Node</span> <span class="variable">head</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Node</span>(<span class="number">0</span>, <span class="number">0</span>); <span class="comment">// 虚拟头</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">Node</span> <span class="variable">tail</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Node</span>(<span class="number">0</span>, <span class="number">0</span>); <span class="comment">// 虚拟尾</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">LRUCache</span><span class="params">(<span class="type">int</span> capacity)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.capacity = capacity;</span><br><span class="line">        head.next = tail;</span><br><span class="line">        tail.prev = head;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">get</span><span class="params">(<span class="type">int</span> key)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!map.containsKey(key)) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> map.get(key);</span><br><span class="line">        moveToFront(node); <span class="comment">// 访问 → 移到最前</span></span><br><span class="line">        <span class="keyword">return</span> node.val;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">put</span><span class="params">(<span class="type">int</span> key, <span class="type">int</span> value)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (map.containsKey(key)) &#123;</span><br><span class="line">            <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> map.get(key);</span><br><span class="line">            node.val = value;</span><br><span class="line">            moveToFront(node);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Node</span>(key, value);</span><br><span class="line">            map.put(key, node);</span><br><span class="line">            addToFront(node);</span><br><span class="line">            <span class="keyword">if</span> (map.size() &gt; capacity) &#123;</span><br><span class="line">                <span class="type">Node</span> <span class="variable">lru</span> <span class="operator">=</span> removeLast(); <span class="comment">// 淘汰最久未用</span></span><br><span class="line">                map.remove(lru.key);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">addToFront</span><span class="params">(Node node)</span> &#123;</span><br><span class="line">        node.next = head.next;</span><br><span class="line">        node.prev = head;</span><br><span class="line">        head.next.prev = node;</span><br><span class="line">        head.next = node;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">remove</span><span class="params">(Node node)</span> &#123;</span><br><span class="line">        node.prev.next = node.next;</span><br><span class="line">        node.next.prev = node.prev;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">moveToFront</span><span class="params">(Node node)</span> &#123;</span><br><span class="line">        remove(node);</span><br><span class="line">        addToFront(node);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Node <span class="title function_">removeLast</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> tail.prev;</span><br><span class="line">        remove(node);</span><br><span class="line">        <span class="keyword">return</span> node;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">        <span class="type">int</span> key, val;</span><br><span class="line">        Node prev, next;</span><br><span class="line">        Node(<span class="type">int</span> key, <span class="type">int</span> val) &#123; <span class="built_in">this</span>.key = key; <span class="built_in">this</span>.val = val; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、对比总结"><a href="#四、对比总结" class="headerlink" title="四、对比总结"></a>四、对比总结</h2><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>单链表</th>
+<th>双链表</th>
+<th>循环链表</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>每节点指针数</td>
+<td>1</td>
+<td>2</td>
+<td>1（尾→头）</td>
+</tr>
+<tr>
+<td>反向遍历</td>
+<td>✗</td>
+<td>✓</td>
+<td>✗</td>
+</tr>
+<tr>
+<td>已知节点删除</td>
+<td>O(n)（需前驱）</td>
+<td>O(1)</td>
+<td>O(1)（双向循环）</td>
+</tr>
+<tr>
+<td>典型应用</td>
+<td>栈、队列</td>
+<td>LRU、浏览器前后</td>
+<td>进程调度</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="五、口诀"><a href="#五、口诀" class="headerlink" title="五、口诀"></a>五、口诀</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">双链表：多一个 prev，换来 O(1) 删除</span><br><span class="line">循环链表：尾巴咬头，天然适合轮转调度</span><br><span class="line">LRU = 双链表（有序）+ HashMap（O(1)查找）</span><br></pre></td></tr></table></figure>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>The Great Bear</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://example.com/2022/04/17/%E5%8F%8C%E9%93%BE%E8%A1%A8-%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8%E6%80%BB%E7%BB%93/">http://example.com/2022/04/17/%E5%8F%8C%E9%93%BE%E8%A1%A8-%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8%E6%80%BB%E7%BB%93/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"># 数据结构</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/05/17/%E5%AD%A6%E4%B9%A0Canal/">学习Canal</a>
+            
+            
+            <a class="next" rel="next" href="/2022/04/15/%E5%8D%95%E9%93%BE%E8%A1%A8%EF%BC%88Singly-Linked-List%EF%BC%89%E6%80%BB%E7%BB%93/">单链表（Singly Linked List）总结</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© The Great Bear | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

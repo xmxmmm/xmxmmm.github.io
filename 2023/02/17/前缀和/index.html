@@ -13,7 +13,7 @@
 
 
 
-<title>Tag | Hexo</title>
+<title>前缀和 | Hexo</title>
 
 
 
@@ -214,36 +214,95 @@
     }
 </script>
             <div class="main">
-                
+                <div class="container">
+    
+    
 
-    <div class="container">
-        <div class="post-wrap tags">
-            <h2 class="post-title">-&nbsp;Tag Cloud&nbsp;-</h2>
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">前缀和</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">The Great Bear</a>
+                    
 
-            <div class="tag-cloud-tags">
-                
-                    <a href="/tags/%E5%A4%9A%E7%BA%A7%E7%BC%93%E5%AD%98/">多级缓存<small>(1)</small></a>
-                
-                    <a href="/tags/agent/">agent<small>(1)</small></a>
-                
-                    <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%B3%BB%E5%88%97/">数据结构系列<small>(1)</small></a>
-                
-                    <a href="/tags/%E7%AE%97%E6%B3%95/">算法<small>(2)</small></a>
-                
-                    <a href="/tags/%E8%99%9A%E6%8B%9F%E6%9C%BA/">虚拟机<small>(2)</small></a>
-                
-                    <a href="/tags/Git/">Git<small>(1)</small></a>
-                
-                    <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构<small>(1)</small></a>
-                
-                    <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络<small>(1)</small></a>
-                
-                    <a href="/tags/%E6%91%B8%E9%B1%BC/">摸鱼<small>(1)</small></a>
-                
-            </div>
+                    
+                        <span class="post-time">
+                        Date: <a href="#">February 17, 2023&nbsp;&nbsp;21:37:53</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p><img src="https://15hmael.github.io/2021/03/02/%E5%89%8D%E7%BC%80%E5%92%8C/1.jpg" alt="test"><br>前缀和是使用一个数组，来储存在当前点之前且包括该点的所有元素的和的一种算法。前缀和算法可以很好的解决一个不变数组的区间查询问题，避免每次查询都需要遍历数组，将查询的时间复杂度降低至O(1)。查询时间复杂度的优化是一个十分常用和重要的问题，而为了解决这些问题，也因此诞生了很多实用的数据结构来解决这些问题。树状数组可以很好的解决存在更新的区间求和问题，而区间最值ST表可以达到O(n)的时间复杂度。区间更新和区间查询问题，则可以通过线段树来很好的解决。<del>线段树以后一定会写的。jpg</del><br>对于一维前缀和问题不再赘述，比较简单。</p>
+<p>对于二位前缀和问题，首先要搞明白的是，前缀和储存的是那些点的前缀和，这个问题不像一维前缀和那样直观。接下来介绍的二位前缀和储存的是从(0,0)点到该点的前缀和。<br><img src="https://15hmael.github.io/2021/03/02/%E5%89%8D%E7%BC%80%E5%92%8C/2.png" alt="test1"><br>通过上图可以看出，储存的时候实际上一个容斥原理的问题，理解了这一点之后问题就基本解决了。<br>而在查询的时候，也是一样的原理，只不过是反过来的过程。<br><img src="https://15hmael.github.io/2021/03/02/%E5%89%8D%E7%BC%80%E5%92%8C/3.png" alt="test2"><br>接下来还需要注意一下边界条件的处理。应为在计算的时候，会需要访问到(row1-1,col2)和(row2,col1-1)以及(row1-1,col1-1)这几个点，在<code>row==0 || col==0</code>的条件下会导致溢出。除了单独处理这种情况以外，可以创建一个m+1,n+1大小的二维数组，并将第一行和第一列初始化为0，这样就可以在不影响结果正确性的情况下同时数组的越界访问。</p>
+<p>end☆~</p>
+
         </div>
-    </div>
 
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>The Great Bear</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://example.com/2023/02/17/%E5%89%8D%E7%BC%80%E5%92%8C/">http://example.com/2023/02/17/%E5%89%8D%E7%BC%80%E5%92%8C/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E7%AE%97%E6%B3%95/"># 算法</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/02/19/%E5%BF%AB%E9%80%9F%E5%B9%82/">快速幂</a>
+            
+            
+            <a class="next" rel="next" href="/2022/05/17/%E5%AD%A6%E4%B9%A0Canal/">学习Canal</a>
+            
+        </section>
+
+
+    </article>
+</div>
 
             </div>
             <footer id="footer" class="footer">
