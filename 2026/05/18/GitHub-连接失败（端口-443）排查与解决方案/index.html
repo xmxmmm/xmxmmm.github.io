@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="The Great Bear">
+
+
+
+
+
+<title>GitHub 连接失败（端口 443）排查与解决方案 | The Great Bear</title>
+
+
+
+    <link rel="icon" href="/1.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+    
+    <!-- 动态线条背景 -->
+    <script>
+        ! function() {
+            function n(n, e, t) {
+                return n.getAttribute(e) || t
+            }
+
+            function e(n) {
+                return document.getElementsByTagName(n)
+            }
+
+            function t() {
+                var t = e("script"),
+                    o = t.length,
+                    i = t[o - 1];
+                return {
+                    l: o,
+                    z: n(i, "zIndex", -1),
+                    o: n(i, "opacity", .5),
+                    c: n(i, "color", "0,0,0"),
+                    n: n(i, "count", 100)
+                }
+            }
+
+            function o() {
+                a = m.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+                    c = m.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+            }
+
+            function i() {
+                r.clearRect(0, 0, a, c);
+                var n, e, t, o, m, l;
+                s.forEach(function(i, x) {
+                    for (i.x += i.xa, i.y += i.ya, i.xa *= i.x > a || i.x < 0 ? -1 : 1, i.ya *= i.y > c || i
+                        .y < 0 ? -1 : 1, r.fillRect(i.x - .5, i.y - .5, 1, 1), e = x + 1; e < u.length; e++)
+                        n = u[e],
+                        null !== n.x && null !== n.y && (o = i.x - n.x, m = i.y - n.y, l = o * o + m * m, l < n
+                            .max && (n === y && l >= n.max / 2 && (i.x -= .03 * o, i.y -= .03 * m), t = (n.max -
+                                l) / n.max, r.beginPath(), r.lineWidth = t / 2, r.strokeStyle = "rgba(" + d.c +
+                            "," + (t + .2) + ")", r.moveTo(i.x, i.y), r.lineTo(n.x, n.y), r.stroke()))
+                }),
+                    x(i)
+            }
+            var a, c, u, m = document.createElement("canvas"),
+                d = t(),
+                l = "c_n" + d.l,
+                r = m.getContext("2d"),
+                x = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window
+                .mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+                function(n) {
+                    window.setTimeout(n, 1e3 / 45)
+                },
+                w = Math.random,
+                y = {
+                    x: null,
+                    y: null,
+                    max: 2e4
+                };
+            m.id = l,
+                m.style.cssText = "position:fixed;top:0;left:0;z-index:" + d.z + ";opacity:" + d.o,
+                e("body")[0].appendChild(m),
+                o(),
+                window.onresize = o,
+                window.onmousemove = function(n) {
+                    n = n || window.event,
+                        y.x = n.clientX,
+                        y.y = n.clientY
+                },
+                window.onmouseout = function() {
+                    y.x = null,
+                        y.y = null
+                };
+            for (var s = [], f = 0; d.n > f; f++) {
+                var h = w() * a,
+                    g = w() * c,
+                    v = 2 * w() - 1,
+                    p = 2 * w() - 1;
+                s.push({
+                    x: h,
+                    y: g,
+                    xa: v,
+                    ya: p,
+                    max: 6e3
+                })
+            }
+            u = s.concat([y]),
+                setTimeout(function() { i() }, 100)
+        }();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">xmx&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">xmx&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">GitHub 连接失败（端口 443）排查与解决方案</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">The Great Bear</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">May 18, 2026&nbsp;&nbsp;15:00:31</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>对 GitHub 克隆失败及 443 端口连接错误提供排查方案。主要步骤包括：确认网络连通性；检查并配置 Git 代理或清除无效代理；排查防火墙拦截；更换公共 DNS 服务器；尝试使用 SSH 协议替代 HTTPS；以及确认 GitHub 服务状态。若本地网络受限，建议切换网络环境测试。</p>
+<p><img src="https://qiniu.meowparty.cn/coder.2023/2026-03-21/cover_1774041122245_b077d1e4ca0a4907b66069ded6a9ae5d.png" alt="GitHub 连接失败（端口 443）排查与解决方案"></p>
+<p>从错误信息来看，这是由于无法连接到 GitHub 的 443 端口导致的克隆失败，可能是网络连接、代理设置或防火墙等问题引起的。可以按以下步骤排查解决：</p>
+<h4 id="1-检查基础网络连接"><a href="#1-检查基础网络连接" class="headerlink" title="1. 检查基础网络连接"></a>1. 检查基础网络连接</h4><ul>
+<li>先确认能否正常访问 GitHub 网站：打开浏览器访问 <code>https://github.com</code>，如果无法打开，说明网络本身无法连接 GitHub（可能是本地网络限制、DNS 问题等）。</li>
+</ul>
+<p>尝试 ping GitHub 服务器（部分网络可能禁 ping，但可作为参考）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping github.com</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-检查代理设置"><a href="#2-检查代理设置" class="headerlink" title="2. 检查代理设置"></a>2. 检查代理设置</h4><p>如果你的网络需要通过代理访问外网，可能是 git 未配置代理，或代理失效导致的。</p>
+<p><strong>配置代理</strong>（如果需要代理）：假设代理地址为 <code>http://127.0.0.1:1080</code>（根据你的实际代理修改）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global http.proxy http://127.0.0.1:1080</span><br><span class="line">git config --global https.proxy https://127.0.0.1:1080</span><br></pre></td></tr></table></figure>
+
+<h6 id="Windows-系统"><a href="#Windows-系统" class="headerlink" title="Windows 系统"></a>Windows 系统</h6><ol>
+<li>打开「控制面板」→「网络和 Internet」→「Internet 选项」；</li>
+<li>切换到「连接」标签，点击「局域网设置」；</li>
+</ol>
+<p>若勾选了「为 LAN 使用代理服务器」，下方会显示代理地址（IP）和端口（例如 <code>127.0.0.1:1080</code>）。</p>
+<p><strong>清除无效代理</strong>（如果之前配置过代理但现在不需要）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global --<span class="built_in">unset</span> http.proxy</span><br><span class="line">git config --global --<span class="built_in">unset</span> https.proxy</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-检查防火墙-安全软件"><a href="#3-检查防火墙-安全软件" class="headerlink" title="3. 检查防火墙&#x2F;安全软件"></a>3. 检查防火墙&#x2F;安全软件</h4><p>本地防火墙或安全软件可能会拦截 git 的网络请求，尝试暂时关闭防火墙或安全软件，再重新执行 <code>git clone</code> 命令测试。</p>
+<h4 id="4-更换-DNS-服务器"><a href="#4-更换-DNS-服务器" class="headerlink" title="4. 更换 DNS 服务器"></a>4. 更换 DNS 服务器</h4><p>如果是 DNS 解析问题，可尝试更换公共 DNS（如谷歌 DNS、阿里 DNS）：</p>
+<ul>
+<li>谷歌 DNS：<code>8.8.8.8</code> 和 <code>8.8.4.4</code></li>
+<li>阿里 DNS：<code>223.5.5.5</code> 和 <code>223.6.6.6</code></li>
+</ul>
+<p>（修改方法：根据你的操作系统（Windows&#x2F;macOS&#x2F;Linux）在网络设置中配置）</p>
+<h4 id="5-尝试-SSH-协议克隆（推荐）"><a href="#5-尝试-SSH-协议克隆（推荐）" class="headerlink" title="5. 尝试 SSH 协议克隆（推荐）"></a>5. 尝试 SSH 协议克隆（推荐）</h4><p>如果 HTTPS 协议始终有问题，可尝试用 SSH 协议克隆（需要先配置 GitHub SSH 密钥）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> git@github.com:bym110/vue-echarts.git</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>如何配置 SSH 密钥：参考 GitHub 官方文档 <a target="_blank" rel="noopener" href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh">Connecting to GitHub with SSH</a></li>
+</ul>
+<h4 id="6-确认-GitHub-服务状态"><a href="#6-确认-GitHub-服务状态" class="headerlink" title="6. 确认 GitHub 服务状态"></a>6. 确认 GitHub 服务状态</h4><p>极少数情况是 GitHub 服务器故障，可访问 <a target="_blank" rel="noopener" href="https://status.github.com/">GitHub Status</a> 查看是否有服务中断。</p>
+<p>如果以上步骤仍未解决，可能是你的网络环境对 GitHub 有特殊限制（如企业内网、校园网等），可尝试切换网络（如手机热点）再测试。我通过第二种方法设置代理成功解决。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>The Great Bear</span>
+                    </p>
+                
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Git/"># Git</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2026/04/18/RAG%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90%E5%AE%9E%E6%88%98%E4%BC%98%E5%8C%96/">RAG检索增强生成实战优化</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© The Great Bear | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
