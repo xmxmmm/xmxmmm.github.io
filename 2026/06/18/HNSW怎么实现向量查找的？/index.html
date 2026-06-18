@@ -13,7 +13,7 @@
 
 
 
-<title>在 ReAct 模式中，如何处理重试以及防止死循环？有哪些标志位可以判断？ | The Great Bear</title>
+<title>HNSW怎么实现向量查找的？ | The Great Bear</title>
 
 
 
@@ -283,7 +283,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">在 ReAct 模式中，如何处理重试以及防止死循环？有哪些标志位可以判断？</h1>
+            <h1 class="post-title">HNSW怎么实现向量查找的？</h1>
             
                 <div class="post-meta">
                     
@@ -292,7 +292,7 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">June 18, 2026&nbsp;&nbsp;16:53:40</a>
+                        Date: <a href="#">June 18, 2026&nbsp;&nbsp;20:05:19</a>
                         </span>
                     
                     
@@ -301,107 +301,32 @@
         </header>
 
         <div class="post-content">
-            <h1 id="ReAct-模式中的死循环防控与重试机制"><a href="#ReAct-模式中的死循环防控与重试机制" class="headerlink" title="ReAct 模式中的死循环防控与重试机制"></a>ReAct 模式中的死循环防控与重试机制</h1><hr>
-<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在 ReAct（Reasoning and Action）模式中，模型通过<strong>思考 → 行动 → 观察</strong>的循环来解决问题。然而，由于 LLM 的随机性或工具调用的不确定性，Agent 容易陷入：</p>
-<ul>
-<li><strong>逻辑死循环</strong>：重复生成相同的 Thought</li>
-<li><strong>无效重试</strong>：反复调用失败的工具</li>
-</ul>
-<p>为构建健壮的 ReAct 系统，通常需要从<strong>硬性约束、状态感知、反馈修正</strong>三个维度来处理。</p>
-<hr>
-<h2 id="一、防止死循环的核心策略"><a href="#一、防止死循环的核心策略" class="headerlink" title="一、防止死循环的核心策略"></a>一、防止死循环的核心策略</h2><blockquote>
-<p>死循环通常发生在：模型认为当前 Action 是唯一解，但 Observation 却不断返回错误或相同结果。</p>
-</blockquote>
-<p><strong>最大迭代次数限制（Max Iterations）</strong></p>
-<p>最基础的”断路器”。设定硬性阈值（如 N &#x3D; 5 或 10），一旦超过该次数，系统强制停止并返回错误或当前最接近的答案。</p>
-<p><strong>重复检测（Repetition Detection）</strong></p>
-<p>记录历史的 Thought 和 Action。如果当前的 Action 及其参数与前几次完全一致，说明模型陷入原地踏步，此时应干预 Prompt，提示模型：”你已经尝试过此操作并得到了相同结果，请尝试其他策略。”</p>
-<p><strong>多样性惩罚或温度调节</strong></p>
-<p>检测到连续两次相同输出时，临时提高 LLM 的 Temperature 采样参数，强制引入随机性以跳出局部最优陷阱。</p>
-<p><strong>Early Exit（早停机制）</strong></p>
-<p>当模型连续多次生成的 Observation 没有任何信息增益时（例如搜索引擎反复返回相同摘要），判定为无法通过当前途径解决，触发早停。</p>
-<hr>
-<h2 id="二、重试机制的处理逻辑"><a href="#二、重试机制的处理逻辑" class="headerlink" title="二、重试机制的处理逻辑"></a>二、重试机制的处理逻辑</h2><blockquote>
-<p>重试不应是简单的重新执行，而应该是<strong>带上下文的修正</strong>。</p>
-</blockquote>
-<p><strong>解析错误重试（Parser Retry）</strong></p>
-<p>当 LLM 输出格式不符合预期（如 JSON 格式损坏）时，将错误信息（Error Traceback）反馈给模型，让其重新生成符合格式的内容，而不是盲目重试。</p>
-<p><strong>工具调用回退（Tool Backoff）</strong></p>
-<p>如果某个工具频繁报错（如 API 超时或权限问题），重试逻辑应包含降级方案：</p>
-<table>
-<thead>
-<tr>
-<th>失败次数</th>
-<th>处理策略</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>第 1 次</td>
-<td>原样重试</td>
-</tr>
-<tr>
-<td>第 2 次</td>
-<td>修改参数重试</td>
-</tr>
-<tr>
-<td>第 3 次</td>
-<td>切换工具或提示用户干预</td>
-</tr>
-</tbody></table>
-<p><strong>反思提示（Self-Reflection）</strong></p>
-<p>在重试的 Prompt 中加入 Reflection 步骤，要求模型先回答：”为什么之前的尝试失败了？我接下来的调整是什么？”这能有效引导模型改变解题思路。</p>
-<hr>
-<h2 id="三、关键标志位"><a href="#三、关键标志位" class="headerlink" title="三、关键标志位"></a>三、关键标志位</h2><p>在实现 ReAct 框架（如 LangChain 或自定义 Engine）时，以下标志位是判断状态和控制流转的关键：</p>
-<table>
-<thead>
-<tr>
-<th>标志位</th>
-<th>描述</th>
-<th>判断逻辑</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>iteration_count</code></td>
-<td>当前迭代轮数</td>
-<td><code>count &gt;= max_iterations</code> 时，触发异常处理或输出 Final Answer</td>
-</tr>
-<tr>
-<td><code>is_repeated_action</code></td>
-<td>动作重复标志</td>
-<td>将当前 <code>(Action, Action_Input)</code> 与历史记录进行哈希比对</td>
-</tr>
-<tr>
-<td><code>consecutive_errors</code></td>
-<td>连续错误计数</td>
-<td>记录连续解析失败或工具调用失败的次数，用于触发降级逻辑</td>
-</tr>
-<tr>
-<td><code>observation_similarity</code></td>
-<td>观察结果相似度</td>
-<td>计算当前 Observation 与上一步的余弦相似度，若 <code>Similarity &gt; 0.95</code> 且无解，判定为死循环</td>
-</tr>
-<tr>
-<td><code>finish_reason</code></td>
-<td>终止原因标志</td>
-<td>标识正常结束 <code>stop</code>、达到限制 <code>max_iters</code> 还是工具链崩溃 <code>error</code></td>
-</tr>
-<tr>
-<td><code>token_usage_threshold</code></td>
-<td>Token 预算标志</td>
-<td>监控累计消耗的 Token，防止在复杂死循环中产生高额费用</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="四、最佳实践建议"><a href="#四、最佳实践建议" class="headerlink" title="四、最佳实践建议"></a>四、最佳实践建议</h2><p><strong>System Prompt 约束</strong></p>
-<p>在系统提示词中明确规定：”如果你发现陷入了循环，请立即停止并向用户说明原因。”</p>
-<p><strong>人工介入点（Human-in-the-loop）</strong></p>
-<p>对于高价值任务，当重试次数达到阈值（如 3 次）时，不直接报错，而是挂起任务并请求人工输入提示，帮助 Agent 绕过障碍。</p>
-<p><strong>结构化输出</strong></p>
-<p>尽量使用结构化工具（如 OpenAI 的 Function Calling 或 JSON Mode），从根源上大幅减少因解析失败导致的重试。</p>
-<hr>
-<blockquote>
-<p><strong>结语</strong>：在实际开发中，防止死循环不仅仅是为了节省资源，更是为了保证 Agent 在复杂长链推理中的<strong>确定性</strong>。硬性迭代限制与动态逻辑判断并非对立，生产系统通常将二者结合使用——前者作为兜底保障，后者作为智能干预。</p>
-</blockquote>
+            <h1 id="跳表"><a href="#跳表" class="headerlink" title="跳表"></a>跳表</h1><p>现在，让我解释一下跳过列表如何加速搜索过程。假设我们想在这个列表中找到元素50。</p>
+<p><img src="https://i-blog.csdnimg.cn/img_convert/6f51780ea687f0569f47ac7858e17698.jpeg" alt="img"></p>
+<p>如果我们使用典型的链表，我们将从第一个元素开始，然后逐个扫描每个节点以查看并检查它是否与50匹配。看看跳过列表如何帮助我们优化这个搜索过程。我们从顶层Layer 2开始，检查同一层中下一个节点对应的值，即65。</p>
+<p><img src="https://i-blog.csdnimg.cn/img_convert/e2aec248daf10de9b80373a4ae8c3c61.jpeg" alt="img"></p>
+<p>由于65&gt;50, 它是一个单向链表，我们必须向下一级Layer 1进行查询，我们检查同一层中下一个节点对应的值，即36。</p>
+<p><img src="https://i-blog.csdnimg.cn/img_convert/a7411fde77c0cab2f77691cd7c7c9b19.jpeg" alt="img"></p>
+<p>由于50&gt;36和，移动到与值36相对应的节点是明智的。现在再次在Layer 1中检查同一层中下一个节点对应的值，即65。</p>
+<p><img src="https://i-blog.csdnimg.cn/img_convert/a2166db1efa06233fa02cbfbf0c31edb.jpeg" alt="img"></p>
+<p>由于65&gt;50, 它是一个单向链表，我们必须向下一级。我们到达了Layer 0，可以按照平常的方式跳跃。如果我们在不构建跳跃表的情况下遍历链表，我们就会进行5跳跃：</p>
+<p><img src="https://i-blog.csdnimg.cn/img_convert/86e923ff20ec04a5a07128566f47c945.jpeg" alt="img"></p>
+<p>但是使用跳过列表，我们可以在3跳跃中完成相同的搜索：</p>
+<p><img src="https://i-blog.csdnimg.cn/img_convert/f05babc4640b6d966915f23baee037ac.jpeg" alt="img"></p>
+<p>虽然在这个例子中，将跳数从减少5到3听起来可能不是一个很大的改进，但值得注意的是典型的矢量数据库有数百万个节点。因此，此类改进可以快速扩展并带来运行时优势。</p>
+<h1 id="HNSW"><a href="#HNSW" class="headerlink" title="HNSW"></a>HNSW</h1><p>同样的，我们使用随机算法构建多层级的HNFW，一般情况下，先使用 与 NSW相同的构图算法构建 Layer 0，然后以一定的概率丢掉一些节点，得到 Layer 1，类似的，可以得到Layer 2, Layer 3等。为了方便我们以图例进行解释。假设我们通过这个步骤得到了以下HNSW 图：</p>
+<p><img src="https://i-blog.csdnimg.cn/img_convert/3e14130451a68db9b2578e92318e957a.jpeg" alt="img"></p>
+<p>让我们了解近似最近邻搜索的工作原理。假设我们想要找到下图中黄色向量的最近邻：</p>
+<p><img src="https://i-blog.csdnimg.cn/img_convert/8a4bc57cb3e608df044cc2fbcb05551d.jpeg" alt="img"></p>
+<p>我们从顶层的入口点开始搜索Layer 2：</p>
+<p><img src="https://i-blog.csdnimg.cn/img_convert/411ca695faf84ad9f7c9f2897ffb2bd0.jpeg" alt="img"></p>
+<p>我们探索A的连通邻居，看看哪个节点与黄色节点最近。在这一层中，最近的节点是C。该算法贪婪地探索一层中顶点的邻域。在此过程中，我们始终朝着查询向量移动。当在某一层中找不到更接近查询向量的节点时，我们移动到下一层，同时将最近邻居（在本例中为C）视为下一层的入口点：</p>
+<p><img src="https://i-blog.csdnimg.cn/img_convert/3cae240ce0e88b861dff5c77c509b415.jpeg" alt="img"></p>
+<p>邻域探索的过程再次重复。我们探索C 的邻居并贪婪地移动到最接近查询向量的特定邻居：</p>
+<p><img src="https://i-blog.csdnimg.cn/img_convert/7566fae755e93e482d6b0751d691406f.jpeg" alt="img"></p>
+<p>同样，由于在Layer 1 中不存在更接近查询向量的节点，我们移动到下一层，同时将最近邻居（在本例中为F）视为下一层的入口点。但这次，我们达到了Layer 0。因此，在这种情况下将返回近似最近邻。当我们移至Layer 0并开始探索其邻域时，我们注意到它没有更接近查询向量的邻居：</p>
+<p><img src="https://i-blog.csdnimg.cn/img_convert/2a831632f931a1f280832a2b31ccf1f8.jpeg" alt="img"></p>
+<p>因此，与节点 F 对应的向量作为近似最近邻返回，巧合的是，这也恰好是真正的最近邻。这就是HNSW索引算法。</p>
 
         </div>
 
@@ -435,7 +360,7 @@
                 <span class="tag">
                     
                     
-                        <a href="/tags/AI/"># AI</a>
+                        <a href="/tags/%E5%90%91%E9%87%8F%E7%B4%A2%E5%BC%95/"># 向量索引</a>
                     
                         
                 </span>
@@ -448,10 +373,8 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2026/06/18/HNSW%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E5%90%91%E9%87%8F%E6%9F%A5%E6%89%BE%E7%9A%84%EF%BC%9F/">HNSW怎么实现向量查找的？</a>
             
-            
-            <a class="next" rel="next" href="/2026/05/18/GitHub-%E8%BF%9E%E6%8E%A5%E5%A4%B1%E8%B4%A5%EF%BC%88%E7%AB%AF%E5%8F%A3-443%EF%BC%89%E6%8E%92%E6%9F%A5%E4%B8%8E%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">GitHub 连接失败（端口 443）排查与解决方案</a>
+            <a class="next" rel="next" href="/2026/06/18/%E5%9C%A8-ReAct-%E6%A8%A1%E5%BC%8F%E4%B8%AD%EF%BC%8C%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E9%87%8D%E8%AF%95%E4%BB%A5%E5%8F%8A%E9%98%B2%E6%AD%A2%E6%AD%BB%E5%BE%AA%E7%8E%AF%EF%BC%9F%E6%9C%89%E5%93%AA%E4%BA%9B%E6%A0%87%E5%BF%97%E4%BD%8D%E5%8F%AF%E4%BB%A5%E5%88%A4%E6%96%AD%EF%BC%9F/">在 ReAct 模式中，如何处理重试以及防止死循环？有哪些标志位可以判断？</a>
             
         </section>
 
