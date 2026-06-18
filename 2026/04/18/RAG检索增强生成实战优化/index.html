@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="The Great Bear">
+
+
+
+
+
+<title>RAG检索增强生成实战优化 | The Great Bear</title>
+
+
+
+    <link rel="icon" href="/1.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+    
+    <!-- 动态线条背景 -->
+    <script>
+        ! function() {
+            function n(n, e, t) {
+                return n.getAttribute(e) || t
+            }
+
+            function e(n) {
+                return document.getElementsByTagName(n)
+            }
+
+            function t() {
+                var t = e("script"),
+                    o = t.length,
+                    i = t[o - 1];
+                return {
+                    l: o,
+                    z: n(i, "zIndex", -1),
+                    o: n(i, "opacity", .5),
+                    c: n(i, "color", "0,0,0"),
+                    n: n(i, "count", 100)
+                }
+            }
+
+            function o() {
+                a = m.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+                    c = m.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+            }
+
+            function i() {
+                r.clearRect(0, 0, a, c);
+                var n, e, t, o, m, l;
+                s.forEach(function(i, x) {
+                    for (i.x += i.xa, i.y += i.ya, i.xa *= i.x > a || i.x < 0 ? -1 : 1, i.ya *= i.y > c || i
+                        .y < 0 ? -1 : 1, r.fillRect(i.x - .5, i.y - .5, 1, 1), e = x + 1; e < u.length; e++)
+                        n = u[e],
+                        null !== n.x && null !== n.y && (o = i.x - n.x, m = i.y - n.y, l = o * o + m * m, l < n
+                            .max && (n === y && l >= n.max / 2 && (i.x -= .03 * o, i.y -= .03 * m), t = (n.max -
+                                l) / n.max, r.beginPath(), r.lineWidth = t / 2, r.strokeStyle = "rgba(" + d.c +
+                            "," + (t + .2) + ")", r.moveTo(i.x, i.y), r.lineTo(n.x, n.y), r.stroke()))
+                }),
+                    x(i)
+            }
+            var a, c, u, m = document.createElement("canvas"),
+                d = t(),
+                l = "c_n" + d.l,
+                r = m.getContext("2d"),
+                x = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window
+                .mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+                function(n) {
+                    window.setTimeout(n, 1e3 / 45)
+                },
+                w = Math.random,
+                y = {
+                    x: null,
+                    y: null,
+                    max: 2e4
+                };
+            m.id = l,
+                m.style.cssText = "position:fixed;top:0;left:0;z-index:" + d.z + ";opacity:" + d.o,
+                e("body")[0].appendChild(m),
+                o(),
+                window.onresize = o,
+                window.onmousemove = function(n) {
+                    n = n || window.event,
+                        y.x = n.clientX,
+                        y.y = n.clientY
+                },
+                window.onmouseout = function() {
+                    y.x = null,
+                        y.y = null
+                };
+            for (var s = [], f = 0; d.n > f; f++) {
+                var h = w() * a,
+                    g = w() * c,
+                    v = 2 * w() - 1,
+                    p = 2 * w() - 1;
+                s.push({
+                    x: h,
+                    y: g,
+                    xa: v,
+                    ya: p,
+                    max: 6e3
+                })
+            }
+            u = s.concat([y]),
+                setTimeout(function() { i() }, 100)
+        }();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">xmx&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">xmx&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">RAG检索增强生成实战优化</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">The Great Bear</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">April 18, 2026&nbsp;&nbsp;13:42:36</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <hr>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>RAG 是 AI 应用落地最核心的技术架构。</p>
+<hr>
+<h2 id="一、文档处理与切分"><a href="#一、文档处理与切分" class="headerlink" title="一、文档处理与切分"></a>一、文档处理与切分</h2><h3 id="1-文档切分策略有哪些？Chunk-大小怎么选？"><a href="#1-文档切分策略有哪些？Chunk-大小怎么选？" class="headerlink" title="1. 文档切分策略有哪些？Chunk 大小怎么选？"></a>1. 文档切分策略有哪些？Chunk 大小怎么选？</h3><p><strong>常见切分策略：</strong></p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>固定长度切分</td>
+<td>按固定 Token 数切分，最简单但可能切断语义</td>
+</tr>
+<tr>
+<td>递归字符切分</td>
+<td>按段落 → 句子 → 字符层级递归切分，尽量保持语义完整</td>
+</tr>
+<tr>
+<td>语义切分</td>
+<td>用 Embedding 计算相邻句子相似度，相似度骤降处切分</td>
+</tr>
+<tr>
+<td>基于文档结构切分</td>
+<td>按标题、章节、页码等结构化标记切分</td>
+</tr>
+</tbody></table>
+<p><strong>Chunk 大小选择：</strong></p>
+<ul>
+<li><strong>太小（100–200 Token）</strong>：单个 Chunk 信息不完整，召回很多碎片</li>
+<li><strong>太大（1000+ Token）</strong>：一个 Chunk 包含太多信息，检索精度下降</li>
+<li><strong>推荐</strong>：500–800 Token，配合 50–100 Token 的重叠窗口</li>
+</ul>
+<blockquote>
+<p>💡 <strong>加分点</strong>：不同文档类型应用不同策略——技术文档按章节切，对话记录按轮次切，代码按函数切。</p>
+</blockquote>
+<hr>
+<h3 id="2-PDF-文档中的表格和图片怎么处理？"><a href="#2-PDF-文档中的表格和图片怎么处理？" class="headerlink" title="2. PDF 文档中的表格和图片怎么处理？"></a>2. PDF 文档中的表格和图片怎么处理？</h3><p><strong>表格处理：</strong></p>
+<ul>
+<li>用文档解析工具提取表格为结构化数据（JSON &#x2F; Markdown 表格）</li>
+<li>将表格内容转为自然语言描述，再切分入库</li>
+<li>保留表格的元数据（表头、所属章节）作为过滤条件</li>
+</ul>
+<p><strong>图片处理：</strong></p>
+<ul>
+<li>OCR 提取文字内容</li>
+<li>多模态模型生成图片描述</li>
+<li>图片描述作为独立 Chunk 入库</li>
+</ul>
+<blockquote>
+<p>⚠️ <strong>实践建议</strong>：不要直接把整个 PDF 按页切分扔进向量库，表格和图片需要单独处理，否则检索时这些信息基本无法命中。</p>
+</blockquote>
+<hr>
+<h3 id="3-重叠窗口是什么？为什么需要？"><a href="#3-重叠窗口是什么？为什么需要？" class="headerlink" title="3. 重叠窗口是什么？为什么需要？"></a>3. 重叠窗口是什么？为什么需要？</h3><p>重叠窗口是<strong>相邻 Chunk 之间共享的一部分文本</strong>，目的是避免切分边界处丢失上下文。</p>
+<p><strong>为什么需要：</strong></p>
+<p>假设 Chunk 大小 500 Token，一个关键信息正好在第 499 Token 处开始，被切到两个 Chunk 里，两个 Chunk 都不完整。有重叠窗口（如 100 Token），这个信息在前后两个 Chunk 中都会完整出现。</p>
+<p><strong>实践建议：</strong></p>
+<ul>
+<li>重叠大小通常设为 Chunk 大小的 <strong>10%–20%</strong></li>
+<li>不是越大越好——重叠太多会导致存储冗余、检索时重复召回</li>
+<li>对于结构化文档（代码、表格），重叠可以设小甚至不加</li>
+</ul>
+<hr>
+<h2 id="二、Embedding-与检索"><a href="#二、Embedding-与检索" class="headerlink" title="二、Embedding 与检索"></a>二、Embedding 与检索</h2><h3 id="4-Embedding-模型怎么选？微调-Embedding-值得吗？"><a href="#4-Embedding-模型怎么选？微调-Embedding-值得吗？" class="headerlink" title="4. Embedding 模型怎么选？微调 Embedding 值得吗？"></a>4. Embedding 模型怎么选？微调 Embedding 值得吗？</h3><p><strong>选择维度：</strong></p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>语言支持</td>
+<td>中英文混合用多语言模型</td>
+</tr>
+<tr>
+<td>领域匹配</td>
+<td>通用领域用通用模型，医疗、法律等考虑领域定制模型</td>
+</tr>
+<tr>
+<td>维度与性能</td>
+<td>768 &#x2F; 1024 &#x2F; 1536 维，维度越高表达越强但成本越高</td>
+</tr>
+<tr>
+<td>最大输入长度</td>
+<td>有些模型只支持 512 Token，长 Chunk 需要截断</td>
+</tr>
+</tbody></table>
+<p><strong>微调 Embedding：</strong></p>
+<ul>
+<li>值得做，但<strong>优先级低于</strong>调切分和检索策略</li>
+<li>用 query 和正负样本对微调，可以显著提升领域检索效果</li>
+<li>注意：微调后需要<strong>重建整个向量库</strong></li>
+<li>数据量少（&lt; 1000 对）时效果不明显，不如先优化切分策略</li>
+</ul>
+<hr>
+<h3 id="5-稠密检索和稀疏检索有什么区别？为什么要混合？"><a href="#5-稠密检索和稀疏检索有什么区别？为什么要混合？" class="headerlink" title="5. 稠密检索和稀疏检索有什么区别？为什么要混合？"></a>5. 稠密检索和稀疏检索有什么区别？为什么要混合？</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>稠密检索（向量检索）</th>
+<th>稀疏检索（BM25 等）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原理</td>
+<td>基于 Embedding 相似度</td>
+<td>基于词频统计</td>
+</tr>
+<tr>
+<td>擅长</td>
+<td>语义匹配（”怎么部署” → “安装步骤”）</td>
+<td>精确匹配（产品型号、错误码、人名）</td>
+</tr>
+<tr>
+<td>弱项</td>
+<td>精确匹配专有名词、代码、编号</td>
+<td>不理解语义</td>
+</tr>
+</tbody></table>
+<p><strong>混合检索：</strong> 同时做稠密和稀疏检索，各取 Top-K，合并后重排，取长补短。实践中<strong>几乎都推荐混合检索</strong>。</p>
+<hr>
+<h3 id="6-重排器是什么？为什么需要？怎么选？"><a href="#6-重排器是什么？为什么需要？怎么选？" class="headerlink" title="6. 重排器是什么？为什么需要？怎么选？"></a>6. 重排器是什么？为什么需要？怎么选？</h3><p><strong>重排器（Reranker）：</strong></p>
+<ul>
+<li>对初筛召回的 Top-K 结果做二次排序</li>
+<li>用更重的模型（Cross-Encoder）对 query 和每个 doc 做交叉注意力计算</li>
+<li>精度远高于 Bi-Encoder 的向量相似度</li>
+</ul>
+<p><strong>为什么需要：</strong></p>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>编码方式</th>
+<th>速度</th>
+<th>精度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>向量检索（Bi-Encoder）</td>
+<td>query 和 doc 独立编码</td>
+<td>快</td>
+<td>有限</td>
+</tr>
+<tr>
+<td>重排器（Cross-Encoder）</td>
+<td>query 和 doc 联合编码</td>
+<td>慢</td>
+<td>高</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>💡 <strong>折中方案</strong>：向量检索召回 Top-50，重排器筛出 Top-5。</p>
+</blockquote>
+<p><strong>选型建议：</strong></p>
+<ul>
+<li>轻量级：用小模型重排，延迟低</li>
+<li>重量级：用大模型重排，精度高但慢</li>
+<li>实践中：先召回 50–100 条，重排取 5–10 条</li>
+</ul>
+<hr>
+<h3 id="7-MMR-是什么？什么时候用？"><a href="#7-MMR-是什么？什么时候用？" class="headerlink" title="7. MMR 是什么？什么时候用？"></a>7. MMR 是什么？什么时候用？</h3><p><strong>MMR（Maximal Marginal Relevance，最大边缘相关性）</strong> 是在”相关性”和”多样性”之间做平衡的重排方法。</p>
+<p>$$\text{MMR} &#x3D; \lambda \cdot \text{Sim}(query, doc) - (1-\lambda) \cdot \max(\text{Sim}(doc, selected_docs))$$</p>
+<table>
+<thead>
+<tr>
+<th>λ 取值</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>λ &#x3D; 1</td>
+<td>纯按相关性排序</td>
+</tr>
+<tr>
+<td>λ &#x3D; 0</td>
+<td>纯按多样性排序</td>
+</tr>
+<tr>
+<td>λ &#x3D; 0.5–0.7</td>
+<td>推荐取值范围</td>
+</tr>
+</tbody></table>
+<p><strong>适用场景：</strong></p>
+<ul>
+<li>✅ 用户提问比较宽泛时（如”介绍一下 RAG”），避免返回 5 条几乎一样的结果</li>
+<li>✅ 知识库有重复&#x2F;近似文档时，避免冗余</li>
+<li>❌ 不适合精确问答场景（如”错误码 1001 是什么意思”），只要最相关的</li>
+</ul>
+<hr>
+<h2 id="三、RAG-进阶"><a href="#三、RAG-进阶" class="headerlink" title="三、RAG 进阶"></a>三、RAG 进阶</h2><h3 id="8-查询改写是什么？有哪些方法？"><a href="#8-查询改写是什么？有哪些方法？" class="headerlink" title="8. 查询改写是什么？有哪些方法？"></a>8. 查询改写是什么？有哪些方法？</h3><p>用户提问往往不够清晰，查询改写是在检索前对 query 做优化。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>查询扩展</td>
+<td>用大模型把 query 扩展为多个相关查询，分别检索后合并</td>
+</tr>
+<tr>
+<td>查询分解</td>
+<td>把复杂问题拆成多个子问题，分别检索</td>
+</tr>
+<tr>
+<td>HyDE</td>
+<td>让大模型先生成假设答案，用假设答案的 Embedding 去检索</td>
+</tr>
+<tr>
+<td>同义词替换</td>
+<td>把 query 中的词替换为同义词，扩大召回</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>⚠️ <strong>实践建议</strong>：查询改写能提升召回率，但增加了延迟和成本。建议先做 baseline，再按需加改写策略。</p>
+</blockquote>
+<hr>
+<h3 id="9-RAG-vs-微调，怎么选？"><a href="#9-RAG-vs-微调，怎么选？" class="headerlink" title="9. RAG vs 微调，怎么选？"></a>9. RAG vs 微调，怎么选？</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>RAG</th>
+<th>微调</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>知识频繁更新</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>有大量私有文档</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>需要引用溯源</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>改变输出风格&#x2F;格式</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>学会特定推理模式</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>延迟敏感</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>💡 <strong>两者不冲突</strong>：可以先微调让模型学会回答格式和推理方式，再用 RAG 提供知识。面试中这个答案很加分。</p>
+</blockquote>
+<hr>
+<h3 id="10-RAG-系统怎么评估？有哪些指标？"><a href="#10-RAG-系统怎么评估？有哪些指标？" class="headerlink" title="10. RAG 系统怎么评估？有哪些指标？"></a>10. RAG 系统怎么评估？有哪些指标？</h3><p><strong>检索环节：</strong></p>
+<ul>
+<li><strong>Context Precision</strong>：召回的上下文中有多少是真正相关的</li>
+<li><strong>Context Recall</strong>：相关文档是否都被召回</li>
+<li><strong>Hit Rate</strong>：Top-K 中是否包含正确答案</li>
+</ul>
+<p><strong>生成环节：</strong></p>
+<ul>
+<li><strong>Faithfulness（忠实度）</strong>：回答是否基于检索到的上下文，有没有编造</li>
+<li><strong>Answer Relevancy（回答相关性）</strong>：回答是否切题</li>
+<li><strong>Answer Correctness</strong>：回答是否正确</li>
+</ul>
+<p><strong>端到端：</strong></p>
+<ul>
+<li>用户满意度评分</li>
+<li>人工标注准确性</li>
+<li>拒答率（该答的不答 vs 该拒的不编）</li>
+</ul>
+<blockquote>
+<p>💡 <strong>工具建议</strong>：可以用 RAGAS 等框架做自动评估，但关键 case 必须人工复核。</p>
+</blockquote>
+<hr>
+<h2 id="四、生产落地"><a href="#四、生产落地" class="headerlink" title="四、生产落地"></a>四、生产落地</h2><h3 id="11-RAG-系统架构怎么设计？"><a href="#11-RAG-系统架构怎么设计？" class="headerlink" title="11. RAG 系统架构怎么设计？"></a>11. RAG 系统架构怎么设计？</h3><p><strong>推荐的分层架构：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">应用层   ←  对话管理 / UI / API</span><br><span class="line">  ↓</span><br><span class="line">生成层   ←  Prompt 组装 / 大模型调用 / 输出校验</span><br><span class="line">  ↓</span><br><span class="line">检索层   ←  查询改写 / 多路召回 / 重排 / 过滤</span><br><span class="line">  ↓</span><br><span class="line">索引层   ←  文档解析 / 切分 / Embedding / 索引构建与更新</span><br><span class="line">  ↓</span><br><span class="line">数据层   ←  文档存储 / 向量库 / 关系数据库</span><br></pre></td></tr></table></figure>
+
+<p><strong>关键设计原则：</strong></p>
+<ul>
+<li>检索和生成<strong>解耦</strong>，可以独立优化</li>
+<li>索引层支持<strong>增量更新</strong>，不用全量重建</li>
+<li>检索层支持<strong>多策略切换</strong>（A&#x2F;B 测试）</li>
+<li>生成层做<strong>输出校验</strong>和兜底</li>
+</ul>
+<hr>
+<h3 id="12-知识库更新怎么做？增量还是全量？"><a href="#12-知识库更新怎么做？增量还是全量？" class="headerlink" title="12. 知识库更新怎么做？增量还是全量？"></a>12. 知识库更新怎么做？增量还是全量？</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>全量重建</th>
+<th>增量更新</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>优点</td>
+<td>简单可靠</td>
+<td>效率高，成本低</td>
+</tr>
+<tr>
+<td>缺点</td>
+<td>耗时耗成本</td>
+<td>需要维护 ID 映射，逻辑复杂</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td>Embedding 模型升级、切分策略变更、知识库规模小（&lt; 1 万文档）</td>
+<td>知识库频繁更新、规模大</td>
+</tr>
+</tbody></table>
+<p><strong>实践建议：</strong></p>
+<ul>
+<li>生产系统以增量更新为主，定期全量重建对齐</li>
+<li>增量更新要有版本管理，出问题可以回滚</li>
+<li><strong>Embedding 模型升级时必须全量重建</strong></li>
+</ul>
+<hr>
+<h3 id="13-RAG-响应延迟怎么优化？"><a href="#13-RAG-响应延迟怎么优化？" class="headerlink" title="13. RAG 响应延迟怎么优化？"></a>13. RAG 响应延迟怎么优化？</h3><p><strong>各环节延迟拆解：</strong></p>
+<table>
+<thead>
+<tr>
+<th>环节</th>
+<th>典型延迟</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>查询改写</td>
+<td>100–500ms</td>
+</tr>
+<tr>
+<td>Embedding 计算</td>
+<td>50–200ms</td>
+</tr>
+<tr>
+<td>向量检索</td>
+<td>10–100ms</td>
+</tr>
+<tr>
+<td>重排</td>
+<td>100–500ms</td>
+</tr>
+<tr>
+<td>大模型生成</td>
+<td>1–10s</td>
+</tr>
+</tbody></table>
+<p><strong>优化手段：</strong></p>
+<ul>
+<li><strong>并行化</strong>：查询改写和 Embedding 可以并行</li>
+<li><strong>缓存</strong>：热门 query 缓存检索结果和答案</li>
+<li><strong>流式输出</strong>：大模型流式返回，首 Token 延迟降到 1–2s</li>
+<li><strong>减少重排量</strong>：召回 Top-20 重排 Top-5，而不是召回 Top-100</li>
+<li><strong>异步预检索</strong>：用户输入时就开始检索，不用等完整 query</li>
+</ul>
+<hr>
+<h3 id="14-RAG-失败怎么兜底？"><a href="#14-RAG-失败怎么兜底？" class="headerlink" title="14. RAG 失败怎么兜底？"></a>14. RAG 失败怎么兜底？</h3><table>
+<thead>
+<tr>
+<th>失败场景</th>
+<th>兜底策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>检索无结果</td>
+<td>返回”未找到相关资料” + 引导用户换关键词</td>
+</tr>
+<tr>
+<td>检索结果都不相关</td>
+<td>不强行回答，告知”现有资料无法回答”</td>
+</tr>
+<tr>
+<td>大模型输出与上下文矛盾</td>
+<td>用校验器检测，不一致时返回检索原文</td>
+</tr>
+<tr>
+<td>大模型超时</td>
+<td>降级返回检索摘要</td>
+</tr>
+<tr>
+<td>向量库故障</td>
+<td>降级为关键词检索</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>⚠️ <strong>原则：宁可说”不知道”，不要编造。</strong> 生产环境的 RAG 系统，拒答比瞎答好。</p>
+</blockquote>
+<hr>
+<h3 id="15-从-0-到-1-搭建-RAG-系统，你会怎么规划？"><a href="#15-从-0-到-1-搭建-RAG-系统，你会怎么规划？" class="headerlink" title="15. 从 0 到 1 搭建 RAG 系统，你会怎么规划？"></a>15. 从 0 到 1 搭建 RAG 系统，你会怎么规划？</h3><p><strong>Phase 1：MVP 验证</strong></p>
+<ul>
+<li>选 10–50 个核心文档</li>
+<li>固定长度切分（500 Token）</li>
+<li>通用 Embedding 模型</li>
+<li>纯向量检索，Top-5</li>
+<li>基础 Prompt：”根据以下资料回答问题”</li>
+<li>验证基本可用性</li>
+</ul>
+<p><strong>Phase 2：效果优化</strong></p>
+<ul>
+<li>优化切分策略</li>
+<li>加混合检索（向量 + BM25）</li>
+<li>加重排器</li>
+<li>加查询改写</li>
+<li>建立评估集，做量化评估</li>
+</ul>
+<p><strong>Phase 3：生产化</strong></p>
+<ul>
+<li>分层架构，检索生成解耦</li>
+<li>增量索引</li>
+<li>缓存策略</li>
+<li>监控告警</li>
+<li>兜底降级</li>
+<li>A&#x2F;B 测试框架</li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>The Great Bear</span>
+                    </p>
+                
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/AI/"># AI</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2026/04/17/%E5%AD%A6%E4%B9%A0harness/">学习harness</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© The Great Bear | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
